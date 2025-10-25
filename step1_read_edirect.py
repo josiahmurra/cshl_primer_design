@@ -2,7 +2,6 @@
 
 import sys
 import subprocess
-import tempfile
 from tempfile import NamedTemporaryFile, gettempprefix
 
 # efetch will allow you to fetch the sequences using accession numbers.
@@ -14,10 +13,9 @@ from Bio import AlignIO
 def main():
     textfile = sys.argv[1]
     seqlist = read_edirect(textfile)
-    alignment_list = muscle_seqgroup(seqlist)
-    for alignment in alignment_list:
-        print(alignment)
-
+    alignmentlist = align_muscle(seqlist)
+    print(alignmentlist)
+    print(alignmentlist[0].seq)
 
 # seqfile_text is the filepath to a text file that contains the accession numbers extracted from NCBI Refseq database. 
 def read_edirect(seqfile_textfile):
@@ -36,7 +34,8 @@ def read_edirect(seqfile_textfile):
     return seq_object_list
 
 # using the temporary files because MuscleCommandline is deprecated
-def muscle_seqgroup(seq_object_list):
+## Q: What about pymuscle5?
+def align_muscle(seq_object_list):
     temp_align = gettempprefix()
     with NamedTemporaryFile(mode = "wt", prefix='muscle', delete_on_close=False) as temp_muscle:
         # writing in fasta format from the list of objects in seq_object_list, and save to temp_muscle
@@ -44,28 +43,8 @@ def muscle_seqgroup(seq_object_list):
             print(f">{seq_object.id}\n{seq_object.seq}", file = temp_muscle)
             print(f">{seq_object.id}\n{seq_object.seq}")
         subprocess.run(["muscle", "-in", temp_muscle.name, "-out", temp_align])
-    alignments = list(AlignIO.read(temp_align, "fasta"))
-    return(alignments)
-
-       
-
-
-
-
-#     muscle_object_align = MuscleCommandline(input=seq_object_list)
-#     print(muscle_object_align)
-#     stdout, stderr = muscle_object_align()
-#     alignment = AlignIO.read(stdout, "fasta")
-#     AlignIO.write(alignment, "seqgroup_output_alignment.fasta", "fasta")
-#     print("seqgroup_output_alignment.fasta")
-
-# muscle_seqgroup(read_edirect('sequence_files.txt'))
-
-
-
-
-
-
+    alignment_list = list(AlignIO.read(temp_align, "fasta"))
+    return alignment_list
 
 if __name__ == '__main__':
     main()
