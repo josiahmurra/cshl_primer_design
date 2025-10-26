@@ -14,8 +14,8 @@ def main():
     textfile = sys.argv[1]
     seqlist = read_edirect(textfile)
     alignmentlist = align_muscle(seqlist)
-    print(alignmentlist)
-    print(alignmentlist[0].seq)
+    # print(alignmentlist)
+    # print(alignmentlist[0].seq)
 
 # seqfile_text is the filepath to a text file that contains the accession numbers extracted from NCBI Refseq database. 
 def read_edirect(seqfile_textfile):
@@ -41,7 +41,7 @@ def align_muscle(seq_object_list):
         # writing in fasta format from the list of objects in seq_object_list, and save to temp_muscle
         for seq_object in seq_object_list:
             print(f">{seq_object.id}\n{seq_object.seq}", file = temp_muscle)
-            print(f">{seq_object.id}\n{seq_object.seq}")
+            # print(f">{seq_object.id}\n{seq_object.seq}")
         subprocess.run(["muscle", "-in", temp_muscle.name, "-out", temp_align])
     alignment_list = list(AlignIO.read(temp_align, "fasta"))
     return alignment_list
