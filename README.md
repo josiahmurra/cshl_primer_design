@@ -1,6 +1,7 @@
 
+# OptimusPrymer
+![OptimusPrymer](./350px-Optimusg1.jpg)
+## Project for designing primer sequences
 
-##Project for designing primer sequences
-
-more reading
+This repository contains pythons scripts for identifying PCR primers
 
