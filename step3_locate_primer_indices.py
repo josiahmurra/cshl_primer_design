@@ -22,18 +22,23 @@ def main():
 
     # Perform alignment
     alignmentlist = align_muscle(seqlist)
+    print(len(alignmentlist))
 
     # the sequence index according to how the accession ids were read in the sequence_files.txt
-    # sequence_index = {}
-    # for index, record in enumerate(alignmentlist):
-    #     sequence_index[record.id] = index
+    sequence_index = {}
+    for index, record in enumerate(alignmentlist):
+        sequence_index[record.id] = index
+    print(sequence_index)
 
     # create an index conversion dictionary
     index_conversion_dict = convert_target_to_MSA(alignmentlist, 2) # just test 2 index for now
 
     
     # identify unique loci
-    unique_loci_dict = unique_mismatch_targetseq(alignmentlist, index_conversion_dict, unique_primers)
+    unique_loci_dict = unique_mismatch_targetseq(alignmentlist)
+
+    # screen primers for those present at unique loci
+    target_unique_loci(unique_loci_dict, 2, index_conversion_dict, unique_primers)
 
     
     
@@ -53,8 +58,6 @@ def convert_target_to_MSA(alignmentlist, target_index):
         if msa_sequence[msa_index] in nts:
             target_index += 1
             
-        print (target_index, msa_index)
-
     return conversion_dict 
     
 
@@ -102,14 +105,59 @@ def unique_mismatch_targetseq(alignmentlist):
     # print(f' Found {unique_pos} unique positions') 
     return unique_loci_dict
 
-# def target_unique_loci(unique_loci_dict, catch_sequence_index, unique_primers):
 
 
-#     unique_pos_list = unique_loci_dict[catch_sequence_index].keys()
-#     for ind, pos, in enumerate(unique_pos_list):
-#         if [ind+1] - pos < 18
+def target_unique_loci(unique_loci_dict, catch_sequence_index, index_conversion_dict, unique_primers):
+    print(unique_loci_dict)
+    # iterate across unique positions for the desired catch sequence
+    unique_pos_list = list(unique_loci_dict[catch_sequence_index].keys())
+    previous_value = None
+    range_start = None
+
+    # build consecutive ranges of unique nucleotides
+    consecutive_ranges = []
+
+    for ind, current_value, in enumerate(unique_pos_list):
+        if ind > 0: # ensure not first element
+            if current_value - previous_value <= 5:
+                # Start tracking a new range if we don't have one started
+                if range_start is None:
+                    range_start = previous_value
+                
+                # If this is the last element or next element is not consecutive, end the range
+                if ind == len(unique_pos_list) - 1 or unique_pos_list[ind + 1] - current_value > 5:
+                    if range_start is not None:
+                        consecutive_ranges.append((range_start, current_value))
+                        #print(f"Consecutive range: {range_start} to {current_value}")
+                        range_start = None
+            else:
+                # Gap is too large, end any current range
+                if range_start is not None:
+                    consecutive_ranges.append((range_start, previous_value))
+                    #print(f"Consecutive range: {range_start} to {previous_value}")
+                    range_start = None
+
+        previous_value = current_value
+    
+    # convert consecutive ranges to sequence positions
+    for consecutive_range in consecutive_ranges:
+        sequence_start = index_conversion_dict[consecutive_range[0]]
+        sequence_end = index_conversion_dict[consecutive_range[1]]
+        #print(f'Sequence start: {sequence_start}, Sequence end: {sequence_end}')
 
 
+    for primer in unique_primers:
+
+        primer_strand = unique_primers[primer].direction
+
+        # get 3 prime end position
+        if primer_strand == 'forward':
+            primer_three = unique_primers[primer].end
+        elif primer_strand == 'reverse':
+            primer_three = unique_primers[primer].start
+
+        # convert 3 prime end position to alignment postion
+        
 
 
 if __name__ == '__main__':
