@@ -163,10 +163,9 @@ def target_unique_loci(unique_loci_dict, catch_sequence_index, index_conversion_
         # filter 3 prime end based on alignment position
         for ranges in consecutive_sequence_ranges:
             if ranges[0]+1 < primer_three < ranges[1]-1:
-                validated_unique_primers.append(primer)
+                validated_unique_primers.append(unique_primers[primer]) # add primer object to list
 
-    print(f'identified {len(validated_unique_primers)} unique primers')
-
+    print(f'Identified {len(validated_unique_primers)} unique primers\n')
     return(validated_unique_primers)
         
 

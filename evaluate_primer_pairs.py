@@ -78,9 +78,11 @@ def check_primer_pairs(primer_list):
             compatible_primer_list.append((for_primer, rev_primer))
 
     print(f'Evaluated {primer_pairs_checked} primer combinations.')
-    print(f'Found {len(compatible_primer_list)} compatible primers') 
+    print(f'Found {len(compatible_primer_list)} compatible primer pairs.') 
     print(f'Primers pairs with bad amplicon size: {incompatable_distance}')
-    print(f'Primers pairs with incompatible Tm: {incompatable_tm}')     
+    print(f'Primers pairs with incompatible Tm: {incompatable_tm}\n') 
+
+    return(compatible_primer_list)    
 
         
 
