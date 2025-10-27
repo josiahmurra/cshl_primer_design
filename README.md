@@ -26,7 +26,7 @@ Here is a diagram of how --catch 'refseq-id' works
 
 ## Step 1 - Retrieve GenBank Files from NCBI (using Eentrez efetch)
 * Creates a Sequence Object List
-```
+```Python
 genbank_fetch_handle = Entrez.efetch(db = "nucleotide", id = seqid_list, rettype = "gb", retmode = "text" )
 seq_object_list = list(SeqIO.parse(genbank_fetch_handle, "genbank"))
 ```
@@ -36,7 +36,7 @@ seq_object_list = list(SeqIO.parse(genbank_fetch_handle, "genbank"))
 * Using subprocess() to run MUSCLE on command line
 * Use a temporary file to prevent the generation of many fasta files
 * Script returns a multiple sequence alignment (MSA) object
-```
+```Python
 def align_muscle(seq_object_list):
     temp_align = gettempprefix()
     with NamedTemporaryFile(mode = "wt", prefix='muscle', delete_on_close=False) as temp_muscle:
@@ -57,7 +57,7 @@ def align_muscle(seq_object_list):
 * Check for self-complementation (using Biopython Bio.Align)
 * Check for Tm >50 and <80 C
 * Check for mono- or di- nucleotide repeats
-```
+```Python
 def self_complementary_check(sequence):
     """
     Align primer to its reverse complement using Bio.Align
@@ -91,7 +91,7 @@ def self_complementary_check(sequence):
 ```
 
 * Created a PrimerObject class to store information about each primer
-```
+```Python
 # define the PrimerObject class
 class PrimerObject:
     # set attributes of PrimerObject
@@ -140,7 +140,7 @@ class PrimerObject:
 
 ## Final Takeaways
 * enumerate() is a very useful function for working with data objects
-```
+```Python
 for ind, current_value, in enumerate(unique_pos_list):
         if ind > 0: # ensure not first element
             if current_value - previous_value <= 5:
