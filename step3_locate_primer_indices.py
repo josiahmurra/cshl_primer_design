@@ -38,7 +38,7 @@ def main():
     unique_loci_dict = unique_mismatch_targetseq(alignmentlist)
 
     # screen primers for those present at unique loci
-    target_unique_loci(unique_loci_dict, 2, index_conversion_dict, unique_primers)
+    validated_unique_preimers = target_unique_loci(unique_loci_dict, 2, index_conversion_dict, unique_primers)
 
     
     
@@ -108,14 +108,17 @@ def unique_mismatch_targetseq(alignmentlist):
 
 
 def target_unique_loci(unique_loci_dict, catch_sequence_index, index_conversion_dict, unique_primers):
-    print(unique_loci_dict)
     # iterate across unique positions for the desired catch sequence
     unique_pos_list = list(unique_loci_dict[catch_sequence_index].keys())
     previous_value = None
     range_start = None
 
     # build consecutive ranges of unique nucleotides
-    consecutive_ranges = []
+    consecutive_ranges = [] # alignment indexed
+    consecutive_sequence_ranges = [] # sequence indexed
+
+    # initiate a list of validated_unique_primers
+    validated_unique_primers = []
 
     for ind, current_value, in enumerate(unique_pos_list):
         if ind > 0: # ensure not first element
@@ -143,7 +146,8 @@ def target_unique_loci(unique_loci_dict, catch_sequence_index, index_conversion_
     for consecutive_range in consecutive_ranges:
         sequence_start = index_conversion_dict[consecutive_range[0]]
         sequence_end = index_conversion_dict[consecutive_range[1]]
-        #print(f'Sequence start: {sequence_start}, Sequence end: {sequence_end}')
+        print(f'Sequence start: {sequence_start}, Sequence end: {sequence_end}')
+        consecutive_sequence_ranges.append((sequence_start, sequence_end))
 
 
     for primer in unique_primers:
@@ -156,7 +160,14 @@ def target_unique_loci(unique_loci_dict, catch_sequence_index, index_conversion_
         elif primer_strand == 'reverse':
             primer_three = unique_primers[primer].start
 
-        # convert 3 prime end position to alignment postion
+        # filter 3 prime end based on alignment position
+        for ranges in consecutive_sequence_ranges:
+            if ranges[0]+1 < primer_three < ranges[1]-1:
+                validated_unique_primers.append(primer)
+
+    print(f'identified {len(validated_unique_primers)} unique primers')
+
+    return(validated_unique_primers)
         
 
 
