@@ -108,11 +108,11 @@ class PrimerObject:
 
 ## Step 4 - Screening PCR primer pairs
 * User input determines whether program:
-    * Identifies Unique Sequence Loci (--catch 'sequence-id')
-        * Parse the MSA object to identify loci with unique sequences ('A', 'T', 'C', 'G' or '-')
-        * Convert the unique loci positions from MSA format to position in original sequence
-            * MSA position [0:10] ATC-----GC  = Original position [0:5] ATCGC
-        * Filter primers to determine if they overlap unique sequences
+* Identifies Unique Sequence Loci (--catch 'sequence-id')
+    * Parse the MSA object to identify loci with unique sequences ('A', 'T', 'C', 'G' or '-')
+    * Convert the unique loci positions from MSA format to position in original sequence
+        * MSA position [0:10] ATC-----GC  = Original position [0:5] ATCGC
+    * Filter primers to determine if they overlap unique sequences
 
 ```
             Unique Sequence Ranges:
