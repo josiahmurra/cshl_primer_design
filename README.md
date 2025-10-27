@@ -127,8 +127,8 @@ class PrimerObject:
             Identified 534 unique primers
 ```
 
-    * Identifies Degenerate (Common) Primers (--catch 'All')
-        * Use PCR primers that were identified multiple times (from multiple sequnces) in Step 3
+* Identifies Degenerate (Common) Primers (--catch 'All')
+    * Use PCR primers that were identified multiple times (from multiple sequnces) in Step 3
 
 * Screen primer pairs
     * ΔTm < 5
