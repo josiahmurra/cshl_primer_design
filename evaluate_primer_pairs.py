@@ -38,6 +38,7 @@ def check_primer_pairs(primer_list):
     forward_primers = list()
     reverse_primers = list()
     compatible_primer_list = list()
+    primer_pairs_checked = 0
     incompatable_tm = 0
     incompatable_distance = 0
 
@@ -53,6 +54,7 @@ def check_primer_pairs(primer_list):
 
     for for_primer in forward_primers:
         for rev_primer in reverse_primers:
+            primer_pairs_checked += 1
             max_score = 0
             rev_rev_com = Seq(rev_primer.seq).reverse_complement() # reverse complement the reverse primer
 
@@ -75,8 +77,10 @@ def check_primer_pairs(primer_list):
 
             compatible_primer_list.append((for_primer, rev_primer))
 
+    print(f'Evaluated {primer_pairs_checked} primer combinations.')
     print(f'Found {len(compatible_primer_list)} compatible primers') 
-    print(f'bad distance: {incompatable_distance}, bad tm: {incompatable_tm}')     
+    print(f'Primers pairs with bad amplicon size: {incompatable_distance}')
+    print(f'Primers pairs with incompatible Tm: {incompatable_tm}')     
 
         
 

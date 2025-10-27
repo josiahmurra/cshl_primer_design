@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
+import sys
 import argparse
 import os
 from Bio.Seq import reverse_complement
-from step1_read_edirect import read_edirect, align_muscle
-from primer_check import check_single_primer
-from primer_generation import PrimerObject, generate_primer_dict, identify_primer_sharing
+from step1_read_edirect import read_edirect
+from step1_read_edirect import align_muscle
+from primer_generation import generate_primer_dict, identify_primer_sharing
+from step3_locate_primer_indices import convert_target_to_MSA, unique_mismatch_targetseq, target_unique_loci
+from evaluate_primer_pairs import check_primer_pairs
 
 
 def validate_file_path(file_path):
@@ -52,15 +55,50 @@ def main():
     textfile = args.input 
 
     # Retrieve genbank records with edirect
+    print(f'Retrieving GenBank Records\n')
     seqlist = read_edirect(textfile)
 
+    # Perform alignment with muscle3
+    print(f'Aligning Sequences with MUSCLE')
+    alignmentlist = align_muscle(seqlist)
+    print(f'\n')
+
+    # get order of accession ids from the sequence_files.txt
+    sequence_index = {}
+    for index, record in enumerate(alignmentlist):
+        sequence_index[record.id] = index
+
+    if args.catch != 'All':
+        index_to_catch = sequence_index[args.catch]
+
     # Generate a list of all possible primers
-    primer_dict = generate_primer_dict(seqlist)
+    primer_dict = generate_primer_dict(seqlist, min_len=20, max_len=21)
 
     # Find shared and unique primers
     shared_primers, unique_primers = identify_primer_sharing(primer_dict)
     print(f"Found {len(shared_primers)} primers shared across all sequences")
-    print(f"Found {len(unique_primers)} primers unique to single sequences")
+    print(f"Found {len(unique_primers)} primers unique to single sequences\n")
+
+     # create an index conversion dictionary
+    index_conversion_dict = convert_target_to_MSA(alignmentlist, 2) # just test 2 index for now
+
+    # identify unique loci
+    unique_loci_dict = unique_mismatch_targetseq(alignmentlist)
+
+    # screen primers for those present at unique loci
+    if args.catch != 'All':
+        print(f'Identifying unique primers for {args.catch}\n')
+        print(f'Unique Sequence Ranges:')
+        validated_unique_primers = target_unique_loci(unique_loci_dict, 2, index_conversion_dict, unique_primers)
+
+    # perform primer pair validation
+    if args.catch == 'All':
+        valid_primer_pairs = check_primer_pairs(shared_primers)
+    else:
+        valid_primer_pairs = check_primer_pairs(validated_unique_primers)
+
+    
+
 
 
 
