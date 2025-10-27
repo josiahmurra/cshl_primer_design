@@ -18,4 +18,5 @@ NM_020978.4
 NM_001386925.1
 NM_001008219.3
 ```
-
+Here is a diagram of how --catch <acession-number> works
+![CatchDiagram](./figures/pcr_diagram.png)

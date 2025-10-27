@@ -62,7 +62,7 @@ def check_primer_pairs(primer_list):
                 incompatable_tm += 1
                 continue
 
-            if 50 > for_primer.start - rev_primer.end < 200:
+            if 70 > for_primer.start - rev_primer.end < 200:
                 incompatable_distance += 1
                 continue
 
